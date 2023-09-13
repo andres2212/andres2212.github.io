@@ -5,97 +5,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ASL Alphabet Detection</title>
+    
+    <!--
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.10.0/dist/ort.min.js"></script>
-    <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
+    -->
+    
+    <script src="/onnxruntime/js/node_modules/onnxruntime-web/dist/ort.min.js"></script>
 
+    <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
 </head>
 
 <body>
-    <input type="file" id="inputImage" accept="image/*">
+    <!-- Video element to display webcam feed -->
+    <video id="video" width="426" height="240" autoplay></video>
+    <button onclick="startWebcam()">Start Webcam</button>
     <div>
-        <img id="originalImage" src="#" alt="Original Image" style="display:none;">
         <canvas id="resultCanvas"></canvas>
     </div>
     <script>
+
+        let displayWidth;
+        let displayHeight;
+
+
         const classes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
         const colors = Array.from({ length: classes.length }, () => [Math.random() * 255, Math.random() * 255, Math.random() * 255]);
 
-        async function loadImage(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = event => {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = () => resolve(img);
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
+        async function startWebcam() {
+            const video = document.getElementById('video');
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.onplaying = () => processVideoFrame();
         }
 
-        function resizeImage(image, targetWidth = 640, targetHeight = 640) {
-            const resizedCanvas = document.createElement('canvas');
-            resizedCanvas.width = targetWidth;
-            resizedCanvas.height = targetHeight;
+        async function processVideoFrame() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('resultCanvas');
+            const ctx = canvas.getContext('2d');
 
-            const ctx = resizedCanvas.getContext('2d');
-            ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
 
-            const resizedImageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
-            return resizedImageData;
+ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+            
+            const inputTensor = await preprocessVideoFrame(video);
+            const modelUrl = 'best416.onnx';
+            await main(modelUrl, inputTensor);
+            
+            requestAnimationFrame(processVideoFrame);
         }
 
-
-        async function preprocessImage(image, targetWidth = 640, targetHeight = 640) {
-
-            // Get the <img> tag from the HTML document
-            let img = document.getElementById('originalImage');
-
-            // Create a canvas element to draw the image onto
+        async function preprocessVideoFrame(video) {
             let canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+            canvas.width = video.videoWidth;
+canvas.height = video.videoHeight;
 
-            // Draw the image onto the canvas
             let ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
 
-            // Convert the pixel data of the canvas to a cv.Mat object
             let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             let matObj = cv.matFromImageData(imageData);
 
-            // Assuming you have a Mat object named 'matObj' with 4 channels
+            // Rest of the preprocessing code (similar to preprocessImage)
             let mat = new cv.Mat(matObj.rows, matObj.cols, cv.CV_8UC3);
             cv.cvtColor(matObj, mat, cv.COLOR_RGBA2RGB);
-            let matShape = mat.sizes;
-
-            // Get the size of the largest side of the original image
-            let largest_side = Math.max(mat.cols, mat.rows);
-
-            // Create a new cv.Mat object filled with zeros (black color)
-            let blackCanvas = new cv.Mat.zeros(largest_side, largest_side, cv.CV_8UC3);
-
-            // Set a region of interest in the new blackCanvas
+            let blackCanvas = new cv.Mat.zeros(Math.max(mat.cols, mat.rows), Math.max(mat.cols, mat.rows), cv.CV_8UC3);
             let roi = blackCanvas.roi(new cv.Rect(0, 0, mat.cols, mat.rows));
             mat.copyTo(roi);
-
-            const blob = cv.blobFromImage(blackCanvas, 1.0 / 255.0, new cv.Size(640, 640), new cv.Scalar(0, 0, 0), false, false, cv.CV_32F);
-
-            // Create an ort.Tensor from the Float32Array
-            const inputT = new ort.Tensor('float32', blob.data32F, [1, 3, 640, 640]);
-
-            console.log(inputT)
+            const blob = cv.blobFromImage(blackCanvas, 1.0 / 255.0, new cv.Size(416, 416), new cv.Scalar(0, 0, 0), false, false, cv.CV_32F);
+            const inputT = new ort.Tensor('float32', blob.data32F, [1, 3, 416, 416]);
 
             return inputT;
         }
 
+
         async function runObjectDetection(session, inputImage) {
             const [height, width] = [inputImage.height, inputImage.width];
+            console.log("Height: ", height)
+            console.log("imaage: ", inputImage)
+            
             const length = Math.max(height, width);
-            const scale = length / 640;
+            const scale = length / 416;
 
-            const inputTensor = await preprocessImage(inputImage);
+            const inputTensor = await preprocessVideoFrame(inputImage);
             const { output0 } = await session.run({ images: inputTensor }); // run session and get output layer
 
             return { output0, scale };
@@ -129,73 +119,155 @@
             return new ort.Tensor(tensor.type, transposed, [cols, rows]);
         }
 
-        async function main(modelUrl, inputImage) {
-            const session = await ort.InferenceSession.create(modelUrl);
 
-            const originalImage = document.getElementById('originalImage');
-            const canvas = document.getElementById('resultCanvas');
-            const ctx = canvas.getContext('2d');
 
-            const { output0, scale } = await runObjectDetection(session, inputImage);
-            const outputData = transpose(output0);
 
-            const rows = outputData.dims[0];
 
-            const boxes = [];
-            const scores = [];
-            const classIds = [];
 
-            for (let i = 0; i < rows; i++) {
-                const rowData = outputData.data.slice(i * 30, (i + 1) * 30);
-                const classScores = rowData.slice(4);
+        async function main(modelUrl) {
+    const session = await ort.InferenceSession.create(modelUrl);
 
-                const maxScore = Math.max(...classScores);
-                const maxClassIndex = classScores.findIndex(score => score === maxScore);
+    const webcamVideo = document.getElementById('video');
+    const canvas = document.getElementById('resultCanvas');
+    const ctx = canvas.getContext('2d');
 
-                if (maxScore >= 0.25) {
-                    const box = [
-                        rowData[0] - (0.5 * rowData[2]), rowData[1] - (0.5 * rowData[3]),
-                        rowData[2], rowData[3]
-                    ];
-                    boxes.push(box);
-                    scores.push(maxScore);
-                    classIds.push(maxClassIndex);
-                }
-            }
+    async function detectFrame() {
+        //It is kinda working here
+        const xScale = 1;
+const yScale = 1;
 
-            const maxScoreIndex = scores.indexOf(Math.max(...scores));
 
-            canvas.width = inputImage.width;
-            canvas.height = inputImage.height;
-            ctx.drawImage(originalImage, 0, 0);
+    const { output0, scale } = await runObjectDetection(session, webcamVideo);
+    console.log(output0)
+    console.log("Scale: ",scale)
+    
+    const outputData = transpose(output0);
 
-            const box = boxes[maxScoreIndex];
-            drawBoundingBox(ctx, classIds[maxScoreIndex], scores[maxScoreIndex], Math.round(box[0] * scale), Math.round(box[1] * scale),
-                Math.round((box[0] + box[2]) * scale), Math.round((box[1] + box[3]) * scale));
+    const rows = outputData.dims[0];
+
+    console.log("Rows: ", rows)
+
+    //Seguir investigando el error, posiblemente el scale tiene que ver, asi como el resize o valores parecidos
+    //Se podria checar pasandole la prediccion en txt como antes.
+    //Quiza el color rgb del blob a false
+    const boxes = [];
+    const scores = [];
+    const classIds = [];
+
+    for (let i = 0; i < rows; i++) {
+        const rowData = outputData.data.slice(i * 30, (i + 1) * 30);
+        const classScores = rowData.slice(4);
+
+        const maxScore = Math.max(...classScores);
+
+        const maxClassIndex = classScores.findIndex(score => score === maxScore);
+
+        if (maxScore >= 0.25) {
+            const box = [
+                rowData[0] - (0.5 * rowData[2]), rowData[1] - (0.5 * rowData[3]),
+                rowData[2], rowData[3]
+            ];
+            boxes.push(box);
+            scores.push(maxScore);
+            classIds.push(maxClassIndex);
         }
 
+        //console.log(scores)
+    }
 
 
-        document.getElementById('inputImage').addEventListener('change', async event => {
-            const file = event.target.files[0];
-            if (!file) return;
 
-            const originalImage = document.getElementById('originalImage');
-            originalImage.src = URL.createObjectURL(file);
-            originalImage.onload = async () => {
-                const inputImage = await loadImage(file);
-                const inputCanvas = document.createElement('canvas');
-                inputCanvas.width = inputImage.width;
-                inputCanvas.height = inputImage.height;
-                const inputCtx = inputCanvas.getContext('2d');
-                inputCtx.drawImage(inputImage, 0, 0);
-                const inputImageElement = new Image(inputImage.width, inputImage.height);
-                inputImageElement.src = inputCanvas.toDataURL();
-                // Provide the URL to your ONNX model file
-                const modelUrl = 'best12.onnx';
-                await main(modelUrl, inputImageElement);
-            };
-        });
+
+const canvas = document.getElementById('resultCanvas');
+canvas.width = displayWidth;
+canvas.height = displayHeight;
+
+
+ctx.drawImage(webcamVideo, 0, 0, displayWidth, displayHeight);
+
+
+    if (scores.length > 0) { // Check if there are any valid predictions
+        const maxScoreIndex = scores.indexOf(Math.max(...scores));
+
+        console.log("Class ID: ", classIds[maxScoreIndex])
+
+
+        const box = boxes[maxScoreIndex];
+        drawBoundingBox(ctx, classIds[maxScoreIndex], scores[maxScoreIndex], 
+                Math.round(box[0] * scale * xScale), 
+                Math.round(box[1] * scale * yScale),
+                Math.round((box[0] + box[2]) * scale * xScale), 
+                Math.round((box[1] + box[3]) * scale * yScale));
+
+
+    }
+
+    requestAnimationFrame(detectFrame);
+}
+
+
+    detectFrame();
+}
+
+async function startWebcam() {
+
+       
+const webcamVideo = document.getElementById('video');
+
+if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+        alert('Your browser does not support webcam access.');
+        return;
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    webcamVideo.srcObject = stream;
+    webcamVideo.style.display = "block";
+
+    await new Promise((resolve) => {
+        webcamVideo.addEventListener('loadedmetadata', resolve);
+    });
+    webcamVideo.play();
+
+const targetWidth = 426;
+const targetHeight = 240;
+
+// Calculate scaling factors
+const widthFactor = targetWidth / webcamVideo.videoWidth;
+const heightFactor = targetHeight / webcamVideo.videoHeight;
+
+
+// Use the smaller factor to keep the aspect ratio
+const scale = Math.min(widthFactor, heightFactor);
+
+
+displayWidth = webcamVideo.videoWidth * scale;
+displayHeight = webcamVideo.videoHeight * scale;
+
+
+video.width = displayWidth;
+video.height = displayHeight;
+
+console.log("Im hereeeee")
+console.log(displayWidth)
+console.log(displayHeight)
+
+
+const canvas = document.getElementById('resultCanvas');
+canvas.width = displayWidth;
+canvas.height = displayHeight;
+
+
+
+
+
+    // Provide the URL to your ONNX model file
+    const modelUrl = 'best416.onnx';
+    //best12 = 640x640
+    //best = 64x64
+    await main(modelUrl);
+
+}
+
     </script>
 </body>
 
