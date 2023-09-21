@@ -1,0 +1,212 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.title {
+  background-color: #8B98B9;
+  width: 100%;
+  height: 20vh;
+  display: grid;
+  place-items: center;
+  font-size: 50px;
+  position: relative;
+}
+
+.title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+.hamburger {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  width: 60px;
+  cursor: pointer;
+}
+
+.bar {
+  background-color: black;
+  height: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 33%;
+  transition: background-color 0.3s, transform 0.3s, height 0.3s;
+}
+
+.hamburger:hover .bar {
+  background-color: transparent;
+  height: 20px;
+}
+
+.hamburger:hover .bar:before {
+  content: attr(data-text);
+  display: block;
+  color: black;
+  background-color: transparent;
+  transition: color 0.3s;
+}
+
+.letters {
+  display: flex;
+  background-color: #D9D9D9;
+  padding: 10px 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 18px;
+}
+
+
+.letter {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  background-color: #84ABAD;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  box-shadow: -5px 5px 4px rgba(25, 23, 94, 1);
+}
+
+.letter:hover {
+  background-color: #8b8b8b;
+  transform: scale(0.9);
+}
+
+.letter.active {
+  box-shadow: inset -5px 5px 4px rgba(25, 23, 94, 0.6);
+  background-color: #6b8d8f;
+  transform: scale(0.9);
+}
+
+.main {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.canvas {
+  flex: 1;
+  background-color: #e0e0e0;
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+}
+
+.letter-card {
+  position: relative;
+  z-index: 2;
+  width: 300px;
+  height: 350px;
+  margin: 10px;
+  background-color: #f2f2f2;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.resourse {
+  position: relative;
+  z-index: 1;
+  width: 300px;
+  height: 350px;
+  margin: 10px;
+  background-color: #f2f2f2;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.letter-card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.letter-card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+img {
+  background-color: white;
+  border: 1px solid black;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 10px;
+}
+
+.letter-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.start {
+  background-color: white;
+  border-radius: 5px;
+  width: 100px;
+  height: 30px;
+  box-shadow: -3px 3px 4px rgba(25, 23, 94, 1);
+}
+
+.start.pressed {
+  box-shadow: inset -3px 3px 4px rgba(25, 23, 94, 0.6);
+  background-color: #d1d0d0;
+}
+
+.start:hover {
+  background-color: #e7e6e6;
+}
+
+.pie {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: flex-end;
+  padding-top: 70px;
+}
+
+.pie a {
+  text-decoration: none;
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b57a0;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0d255a;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
