@@ -59,6 +59,11 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   gap: 18px;
+  position: sticky;
+  top: 0;  /* This should position the letters section right below the title */
+  z-index: 1000;  /* This will ensure the letters section is rendered on top of other elements */
+  width: 100%;
+  /* Other styles */
 }
 
 
@@ -93,28 +98,57 @@
 .main {
   position: relative;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
+  height: 100vh;
+  /* This will ensure that the .main container takes up the full viewport height */
+  background-color: #ffffff;
+  overflow: hidden;
+  /* Optional: to hide any overflowing content */
+
+  padding-top: 10px;
 }
 
+.left-side {
+  flex-basis: 40%;
+
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center
+}
+
+.right-side {
+
+  flex-basis: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
 .canvas {
-  flex: 1;
-  background-color: #e0e0e0;
-  height: 60vh;
+  background-color: #ffe0f3;
+  height: 60%;
+  width: 60%;
   display: flex;
   justify-content: center;
   align-items: center;
   border: 1px solid #ccc;
+
+  padding: 20%;
+
+
 }
+
+
 
 .letter-card {
   position: relative;
   z-index: 2;
   width: 300px;
   height: 350px;
-  margin: 10px;
+  margin-bottom: 10px;
   background-color: #f2f2f2;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
@@ -123,13 +157,33 @@
 .resourse {
   position: relative;
   z-index: 1;
-  width: 300px;
-  height: 350px;
   margin: 10px;
   background-color: #f2f2f2;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
 }
+
+.video-container {
+  padding: 20px;
+  position: relative;
+  background: inherit;
+
+  max-width: 100%;  /* This will ensure the video container does not exceed the width of its parent */
+    max-height: 100%; /* This will ensure the video container does not exceed the height of its parent */
+
+  /* This ensures the padding area shows the background of .resourse */
+}
+
+.video-js {
+  position: relative;
+  width: auto;
+  height: 400px;
+  max-height: 100%;
+  max-width: 100%;
+  
+  /* Ensure the video doesn't exceed its container height */
+}
+
 
 .letter-card:hover {
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
@@ -180,7 +234,8 @@ img {
   justify-content: center;
   gap: 20px;
   align-items: flex-end;
-  padding-top: 70px;
+  /*padding-top: 70px;*/
+  padding-bottom: 10px;
 }
 
 .pie a {
@@ -209,4 +264,17 @@ img {
 
 ::-webkit-scrollbar-button {
   display: none;
+}
+
+
+
+@media (max-width: 768px) {
+  .main {
+      flex-direction: column;
+      overflow: unset;
+  }
+  .right-side{
+    overflow: unset;
+  }
+
 }
