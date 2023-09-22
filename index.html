@@ -3,8 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.5, maximum-scale=0.5, user-scalable=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles2.css">
     <title>ASL</title>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.15.0/dist/ort.min.js"></script>
@@ -12,7 +11,7 @@
 </head>
 
 <body>
-    
+
     <div class="title">
         <a href="design2.html">
             Learn ASL Alphabet
@@ -54,14 +53,16 @@
     </div>
 
     <div class="main">
-        <div class="canvas">
-            <video height="240" id="video" style="display:none;" width="426"></video>
-            <div>
-                <canvas id="resultCanvas"></canvas>
-                <center>
-                    <br>
-                    <button class="start" onclick="startWebcam()">Start Webcam</button>
-                </center>
+        <div class="left-side">
+            <div class="canvas">
+                <video height="240" id="video" style="display:none;" width="426"></video>
+                <div>
+                    <canvas id="resultCanvas"></canvas>
+                    <center>
+                        <br>
+                        <button class="start" onclick="startWebcam()">Start Webcam</button>
+                    </center>
+                </div>
             </div>
         </div>
         <div class="right-side">
@@ -73,19 +74,25 @@
                 </div>
             </div>
             <div class="resourse">
-                <div class="letter-card-container">
-                    <video id="my-video" class="video-js" controls preload="auto" width="640" height="360">
-                        <source src="B.mp4">
+                <div class="video-container">
+                    <video id="my-video" class="video-js" controls preload="auto">
+                        <source src="/vids/A.mp4">
                         video
                     </video>
                 </div>
             </div>
-            <div class="pie">
-                <a href=""> Home </a>
-                <a href=""> Github </a>
-                <a href=""> About </a>
-            </div>
+        </div>
+    </div>
+
+
+    <div class="pie">
+        <a href=""> Home </a>
+        <a href=""> Github </a>
+        <a href=""> About </a>
+    </div>
+
 </body>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -97,7 +104,6 @@
             });
         });
     });
-
 </script>
 
 <script type="text/javascript">
@@ -106,8 +112,7 @@
     const letterCardContainer = document.getElementById('text-inner');
     const letterTitle = document.getElementById('letter-title');
     const letterImage = document.getElementById('letter-image');
-    const videosrc = document.getElementById('resourse');
-    
+    const videosrc = document.getElementById('my-video');
 
     letterButtons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -115,8 +120,7 @@
             letterTitle.innerText = `Letter ${letter.toUpperCase()}`;
             letterCardContainer.innerText = `This is the ASL sign for the letter ${letter.toUpperCase()}.`;
             letterImage.src = `${letter.toLowerCase()}.svg`;
-            //videosrc.src = `${letter.toUpperCase()}.mp4`;
-
+            videosrc.src = `/vids/${letter.toUpperCase()}.mp4`;
 
         });
     });
