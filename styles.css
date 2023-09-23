@@ -97,11 +97,37 @@
 .main {
   position: relative;
   display: flex;
-  height: 100vh;
   background-color: #ffffff;
   overflow: hidden;
-
   padding-top: 10px;
+}
+
+.main-about{
+  position: relative;
+  background-color: #ffffff;
+  padding-top: 10px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.about{
+  position: relative;
+  display: flex;
+  width: 50%;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.txt{
+  font-family: Arial;
+}
+
+.attributions{
+  position: relative;
+  font-family: Arial;
+
 }
 
 .night-mode {
@@ -129,11 +155,11 @@
   flex-basis: 40%;
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+  padding-bottom: 10px;
 }
 
 .right-side {
-
   flex-basis: 60%;
   display: flex;
   flex-direction: column;
@@ -151,10 +177,7 @@
   justify-content: center;
   align-items: center;
   border: 1px solid #ccc;
-
   padding: 20%;
-
-
 }
 
 
