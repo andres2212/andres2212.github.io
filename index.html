@@ -1,157 +1,318 @@
-<!DOCTYPE html>
-<html lang="en">
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles2.css">
-    <title>ASL</title>
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.15.0/dist/ort.min.js"></script>
-    <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
-</head>
+.title {
+  background-color: #8B98B9;
+  width: 100%;
+  height: 20vh;
+  display: grid;
+  place-items: center;
+  font-size: 50px;
+  position: relative;
+}
 
-<body>
-
-    <div class="title">
-        <a href="design2.html">
-            Learn ASL Alphabet
-        </a>
-        <div class="hamburger">
-            <div class="bar" data-text="Home"></div>
-            <div class="bar" data-text="Github"></div>
-            <div class="bar" data-text="About"></div>
-        </div>
-    </div>
-
-    <div class="letters">
-        <button class="letter" data-letter="A">A</button>
-        <button class="letter" data-letter="B">B</button>
-        <button class="letter" data-letter="C">C</button>
-        <button class="letter" data-letter="D">D</button>
-        <button class="letter" data-letter="E">E</button>
-        <button class="letter" data-letter="F">F</button>
-        <button class="letter" data-letter="G">G</button>
-        <button class="letter" data-letter="H">H</button>
-        <button class="letter" data-letter="I">I</button>
-        <button class="letter" data-letter="J">J</button>
-        <button class="letter" data-letter="K">K</button>
-        <button class="letter" data-letter="L">L</button>
-        <button class="letter" data-letter="M">M</button>
-        <button class="letter" data-letter="N">N</button>
-        <button class="letter" data-letter="O">O</button>
-        <button class="letter" data-letter="P">P</button>
-        <button class="letter" data-letter="Q">Q</button>
-        <button class="letter" data-letter="R">R</button>
-        <button class="letter" data-letter="S">S</button>
-        <button class="letter" data-letter="T">T</button>
-        <button class="letter" data-letter="U">U</button>
-        <button class="letter" data-letter="V">V</button>
-        <button class="letter" data-letter="W">W</button>
-        <button class="letter" data-letter="X">X</button>
-        <button class="letter" data-letter="Y">Y</button>
-        <button class="letter" data-letter="Z">Z</button>
-    </div>
-
-    <div class="main">
-        <div class="toggle-button-container">
-            <img class="day" id="day" src="night.svg" alt="Toggle Night Mode" />
-        </div>
-        <div class="left-side">
-            <div class="canvas">
-                <video height="240" id="video" style="display:none;" width="426"></video>
-                <div>
-                    <canvas id="resultCanvas"></canvas>
-                    <center>
-                        <br>
-                        <button class="start" onclick="startWebcam()">Start Webcam</button>
-                    </center>
-                </div>
-            </div>
-        </div>
-        <div class="right-side">
-            <div class="letter-card" id="letter-card">
-                <div class="letter-card-container" id="letter-card-container">
-                    <img class="image" src="a.svg" alt="Description of the image" id="letter-image">
-                    <div class="letter-card-title" id="letter-title">Letter A</div>
-                    <p id="text-inner">This is the ASL sign for the letter A.</p>
-                </div>
-            </div>
-            <div class="resourse">
-                <div class="video-container">
-                    <video id="my-video" class="video-js" controls preload="auto" autoplay loop muted controls disablepictureinpicture controlslist="nodownload">
-                        <source src="/vids/A.mp4">
-                        video
-                    </video>
-                </div>
-            </div>
-        </div>
-    </div>
+.title a {
+  text-decoration: none;
+  color: inherit;
+}
 
 
-    <div class="pie">
-        <a href=""> Home </a>
-        <a href=""> Github </a>
-        <a href=""> About </a>
-    </div>
+.hamburger {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  width: 60px;
+  cursor: pointer;
+}
 
-</body>
+.bar {
+  background-color: black;
+  height: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 33%;
+  transition: background-color 0.3s, transform 0.3s, height 0.3s;
+}
 
+.hamburger:hover .bar {
+  background-color: transparent;
+  height: 20px;
+}
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const letters = document.querySelectorAll('.letter');
-        letters.forEach(letter => {
-            letter.addEventListener('click', function () {
-                letters.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    });
-</script>
+.hamburger:hover .bar:before {
+  content: attr(data-text);
+  display: block;
+  color: black;
+  background-color: transparent;
+  transition: color 0.3s;
+}
 
-<script type="text/javascript">
-    const letterButtons = document.querySelectorAll('.letter');
-    const letterCard = document.getElementById('letter-card');
-    const letterCardContainer = document.getElementById('text-inner');
-    const letterTitle = document.getElementById('letter-title');
-    const letterImage = document.getElementById('letter-image');
-    const videosrc = document.getElementById('my-video');
-
-    letterButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const letter = button.dataset.letter;
-            letterTitle.innerText = `Letter ${letter.toUpperCase()}`;
-            letterCardContainer.innerText = `This is the ASL sign for the letter ${letter.toUpperCase()}.`;
-            letterImage.src = `${letter.toLowerCase()}.svg`;
-            videosrc.src = `/vids/${letter.toUpperCase()}.mp4`;
-
-        });
-    });
-</script>
-
-<script src="design2.js"></script>
-
-
-<script type="text/javascript">
-// Get references to the toggle icon container and the toggle icon
-var toggleIconContainer = document.getElementById('day');
-var main = document.querySelector('.main');
-
-// Add an event listener to the toggle icon container
-toggleIconContainer.addEventListener('click', function() {
-    // Toggle the night-mode class on the main element
-    main.classList.toggle('night-mode');
-    
-    // Change the icon depending on whether night mode is active
-    if (main.classList.contains('night-mode')) {
-        toggleIconContainer.src = 'day.svg';
-    } else {
-        toggleIconContainer.src = 'night.svg';
-    }
-});
+.letters {
+  display: flex;
+  background-color: #D9D9D9;
+  padding: 10px 20px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  gap: 18px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
 
 
-</script>
+.letter {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  background-color: #84ABAD;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  box-shadow: -5px 5px 4px rgba(25, 23, 94, 1);
+}
+
+.letter:hover {
+  background-color: #8b8b8b;
+  transform: scale(0.9);
+}
+
+.letter.active {
+  box-shadow: inset -5px 5px 4px rgba(25, 23, 94, 0.6);
+  background-color: #6b8d8f;
+  transform: scale(0.9);
+}
+
+.main {
+  position: relative;
+  display: flex;
+  background-color: #ffffff;
+  overflow: hidden;
+  padding-top: 10px;
+}
+
+.main-about{
+  position: relative;
+  background-color: #ffffff;
+  padding-top: 10px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+}
+
+.about{
+  position: relative;
+  display: flex;
+  width: 50%;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.txt{
+  font-family: Arial;
+}
+
+.attributions{
+  position: relative;
+  font-family: Arial;
+
+}
+
+.night-mode {
+  background-color: #664a4a;
+}
+
+.toggle-button-container {
+  position: absolute;
+  top: 10px;
+  right: 5%; 
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
+}
 
 
-</html>
+.day{
+  width: 8%;
+  height: 8%;
+  margin-bottom: 10px;
+  cursor: pointer; 
+}
+
+.left-side {
+  flex-basis: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.right-side {
+  flex-basis: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+
+.canvas {
+  background-color: #ffe0f3;
+  height: 60%;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 20%;
+}
+
+
+
+.letter-card {
+  position: relative;
+  z-index: 2;
+  width: 300px;
+  height: 350px;
+  margin-bottom: 10px;
+  background-color: #f2f2f2;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.resourse {
+  position: relative;
+  z-index: 1;
+  margin: 10px;
+  background-color: #f2f2f2;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.video-container {
+  padding: 20px;
+  position: relative;
+  background: inherit;
+
+  max-width: 100%;
+  max-height: 100%;
+
+}
+
+.video-js {
+  position: relative;
+  width: auto;
+  height: 400px;
+  max-height: 100%;
+  max-width: 100%;
+
+}
+
+
+.letter-card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.letter-card-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 20px;
+}
+
+.image {
+  background-color: white;
+  border: 1px solid black;
+  width: 200px;
+  height: 200px;
+  margin-bottom: 10px;
+}
+
+.letter-card-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.start {
+  background-color: white;
+  border-radius: 5px;
+  width: 100px;
+  height: 30px;
+  box-shadow: -3px 3px 4px rgba(25, 23, 94, 1);
+}
+
+.start.pressed {
+  box-shadow: inset -3px 3px 4px rgba(25, 23, 94, 0.6);
+  background-color: #d1d0d0;
+}
+
+.start:hover {
+  background-color: #e7e6e6;
+}
+
+.pie {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: flex-end;
+  /*padding-top: 70px;*/
+  padding-bottom: 10px;
+}
+
+.pie a {
+  text-decoration: none;
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b57a0;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0d255a;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+
+
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+    overflow: auto;
+  }
+
+  .right-side {
+    overflow: unset;
+  }
+
+}
