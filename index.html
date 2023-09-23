@@ -53,6 +53,9 @@
     </div>
 
     <div class="main">
+        <div class="toggle-button-container">
+            <img class="day" id="day" src="night.svg" alt="Toggle Night Mode" />
+        </div>
         <div class="left-side">
             <div class="canvas">
                 <video height="240" id="video" style="display:none;" width="426"></video>
@@ -68,14 +71,14 @@
         <div class="right-side">
             <div class="letter-card" id="letter-card">
                 <div class="letter-card-container" id="letter-card-container">
-                    <img src="a.svg" alt="Description of the image" id="letter-image">
+                    <img class="image" src="a.svg" alt="Description of the image" id="letter-image">
                     <div class="letter-card-title" id="letter-title">Letter A</div>
                     <p id="text-inner">This is the ASL sign for the letter A.</p>
                 </div>
             </div>
             <div class="resourse">
                 <div class="video-container">
-                    <video id="my-video" class="video-js" controls preload="auto">
+                    <video id="my-video" class="video-js" controls preload="auto" autoplay loop muted controls disablepictureinpicture controlslist="nodownload">
                         <source src="/vids/A.mp4">
                         video
                     </video>
@@ -127,5 +130,28 @@
 </script>
 
 <script src="design2.js"></script>
+
+
+<script type="text/javascript">
+// Get references to the toggle icon container and the toggle icon
+var toggleIconContainer = document.getElementById('day');
+var main = document.querySelector('.main');
+
+// Add an event listener to the toggle icon container
+toggleIconContainer.addEventListener('click', function() {
+    // Toggle the night-mode class on the main element
+    main.classList.toggle('night-mode');
+    
+    // Change the icon depending on whether night mode is active
+    if (main.classList.contains('night-mode')) {
+        toggleIconContainer.src = 'day.svg';
+    } else {
+        toggleIconContainer.src = 'night.svg';
+    }
+});
+
+
+</script>
+
 
 </html>
