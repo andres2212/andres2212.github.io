@@ -60,10 +60,9 @@
   -webkit-overflow-scrolling: touch;
   gap: 18px;
   position: sticky;
-  top: 0;  /* This should position the letters section right below the title */
-  z-index: 1000;  /* This will ensure the letters section is rendered on top of other elements */
+  top: 0;
+  z-index: 1000;
   width: 100%;
-  /* Other styles */
 }
 
 
@@ -99,18 +98,35 @@
   position: relative;
   display: flex;
   height: 100vh;
-  /* This will ensure that the .main container takes up the full viewport height */
   background-color: #ffffff;
   overflow: hidden;
-  /* Optional: to hide any overflowing content */
 
   padding-top: 10px;
 }
 
+.night-mode {
+  background-color: #664a4a;
+}
+
+.toggle-button-container {
+  position: absolute;
+  top: 10px;
+  right: 5%; 
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
+}
+
+
+.day{
+  width: 8%;
+  height: 8%;
+  margin-bottom: 10px;
+  cursor: pointer; 
+}
+
 .left-side {
   flex-basis: 40%;
-
-  background-color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center
@@ -168,10 +184,9 @@
   position: relative;
   background: inherit;
 
-  max-width: 100%;  /* This will ensure the video container does not exceed the width of its parent */
-    max-height: 100%; /* This will ensure the video container does not exceed the height of its parent */
+  max-width: 100%;
+  max-height: 100%;
 
-  /* This ensures the padding area shows the background of .resourse */
 }
 
 .video-js {
@@ -180,8 +195,7 @@
   height: 400px;
   max-height: 100%;
   max-width: 100%;
-  
-  /* Ensure the video doesn't exceed its container height */
+
 }
 
 
@@ -198,7 +212,7 @@
   padding: 20px;
 }
 
-img {
+.image {
   background-color: white;
   border: 1px solid black;
   width: 200px;
@@ -270,10 +284,11 @@ img {
 
 @media (max-width: 768px) {
   .main {
-      flex-direction: column;
-      overflow: unset;
+    flex-direction: column;
+    overflow: auto;
   }
-  .right-side{
+
+  .right-side {
     overflow: unset;
   }
 
