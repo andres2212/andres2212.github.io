@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>ASL</title>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.15.0/dist/ort.min.js"></script>
+    <script src="https://docs.opencv.org/4.5.4/opencv.js"></script>
+</head>
+
+<body>
+
+    <div class="title">
+        <a href="index.html">
+            Learn ASL Alphabet
+        </a>
+        <div class="hamburger">
+            <a href="index.html">
+                <div class="bar" data-text="Home"></div>
+            </a>
+            <a href="about.html">
+                <div class="bar" data-text="About"></div>
+            </a>
+        </div>
+    </div>
+
+    <div class="letters">
+        <button class="letter" data-letter="A">A</button>
+        <button class="letter" data-letter="B">B</button>
+        <button class="letter" data-letter="C">C</button>
+        <button class="letter" data-letter="D">D</button>
+        <button class="letter" data-letter="E">E</button>
+        <button class="letter" data-letter="F">F</button>
+        <button class="letter" data-letter="G">G</button>
+        <button class="letter" data-letter="H">H</button>
+        <button class="letter" data-letter="I">I</button>
+        <button class="letter" data-letter="J">J</button>
+        <button class="letter" data-letter="K">K</button>
+        <button class="letter" data-letter="L">L</button>
+        <button class="letter" data-letter="M">M</button>
+        <button class="letter" data-letter="N">N</button>
+        <button class="letter" data-letter="O">O</button>
+        <button class="letter" data-letter="P">P</button>
+        <button class="letter" data-letter="Q">Q</button>
+        <button class="letter" data-letter="R">R</button>
+        <button class="letter" data-letter="S">S</button>
+        <button class="letter" data-letter="T">T</button>
+        <button class="letter" data-letter="U">U</button>
+        <button class="letter" data-letter="V">V</button>
+        <button class="letter" data-letter="W">W</button>
+        <button class="letter" data-letter="X">X</button>
+        <button class="letter" data-letter="Y">Y</button>
+        <button class="letter" data-letter="Z">Z</button>
+    </div>
+
+    <div class="main-about">
+        <div class="about">
+            <div><h1>About</h1></div>
+            <br>
+            <pre class="txt">
+
+                    <b> Learn ASL Alphabet App </b>
+                    
+                    Welcome to the Learn ASL Alphabet app, your interactive companion for mastering the American Sign
+                    Language (ASL) alphabet. Through a intuitive design and technology, our app
+                    facilitates a dynamic learning experience, making ASL education accessible and engaging.
+
+                    <b> Features: </b>
+                    <b>Interactive Learning:</b> Explore the ASL alphabet through our visual interface. Click on any letter to
+                    unveil its corresponding ASL sign along with a video demonstration.
+
+                    <b>Real-Time Sign Recognition:</b> Powered by YOLO v8 detection model, our app offers real-time
+                    sign recognition through your webcam. Practice your signs and get instant feedback, enhancing your
+                    learning curve.
+
+                    <b>Night Mode:</b> Ensure a comfortable learning with our day and night modes.
+
+                    <b>Responsive Design:</b> Enjoy a seamless learning experience across desktop, tablet, or smartphone, with
+                    our app's responsive design adjusting to fit your screen.
+                    
+                    <b> Limitations:</b>
+                    Our current version is trained using static images, which allows for the recognition of static signs. However,
+                    this means that dynamic signs, like the letters J and Z, which require movement to convey meaning, are not 
+                    supported at this time.
+                    
+                    <b> Getting Started: </b>
+                    Navigate through the alphabet using the scrollable menu at the top of the page.
+                    Click on a letter to unveil its ASL sign and watch the video demonstration.
+                    Activate your webcam and practice the signs in real-time, receiving immediate feedback through our
+                    sign recognition system.
+                    Toggle between day and night modes to suit your preference.
+                    
+                    <b> Contact:</b>
+                    For any inquiries, suggestions, or feedback, feel free to reach out at contact@learnasl.info
+
+                </pre>
+
+            <div class="attributions">
+                <h2>Attributions</h2>
+                <p>
+                    The videos utilized in this project is sourced from the American Sign Language Linguistic Research
+                    Project (ASLLRP) and is used for research and educational purposes, in accordance with the terms of
+                    use. The following publications, as stipulated by the ASLLRP, are acknowledged:
+                </p>
+                <ul>
+                    <li>
+                        Carol Neidle, Augustine Opoku, Carey Ballard, Konstantinos Dafnis, Evgenia Chroni & Dimitris
+                        Metaxas [2022] <a href="https://open.bu.edu/handle/2144/45152" target="_blank">"Resources for
+                            Computer-Based Sign Recognition from Video, and the Criticality of Consistency of Gloss
+                            Labeling across Multiple Large ASL Video Corpora."</a> 10th Workshop on the Representation
+                        and Processing of Sign Languages: Multilingual Sign Language Resources. LREC, Marseille, France.
+                        European Language Resources Association (ELRA).
+                    </li>
+                    <li>
+                        Carol Neidle, Augustine Opoku, and Dimitris Metaxas [2022] <a
+                            href="https://arxiv.org/abs/2201.07899" target="_blank">"ASL video Corpora & Sign Bank:
+                            resources available through the American Sign Language Linguistic Research Project
+                            (ASLLRP)."</a> arXiv:2201.07899.
+                    </li>
+                    <li>
+                        Carol Neidle & Augustine Opoku [2021] <a href="https://www.bu.edu/asllrp/rpt19/asllrp19.pdf"
+                            target="_blank">"Update on Linguistically Annotated ASL Video Data Available through the
+                            American Sign Language Linguistic Research Project (ASLLRP)."</a> Boston University, ASLLRP
+                        Project Report No. 19.
+                    </li>
+                    <li>
+                        Carol Neidle and Christian Vogler [2012] <a
+                            href="http://www.bu.edu/linguistics/UG/LREC2012/LREC-dai-final.pdf" target="_blank">"A New
+                            Web Interface to Facilitate Access to Corpora: Development of the ASLLRP Data Access
+                            Interface,"</a> Proceedings of the 5th Workshop on the Representation and Processing of Sign
+                        Languages: Interactions between Corpus and Lexicon, LREC 2012, Istanbul, Turkey.
+                    </li>
+                </ul>
+                <p>
+                    For more information, visit: <a href="http://dai.cs.rutgers.edu/" target="_blank">DAI Rutgers</a>,
+                    <a href="http://dai.cs.rutgers.edu/dai/s/signbank" target="_blank">Sign Bank at DAI Rutgers</a>, and
+                    <a href="http://www.bu.edu/asllrp/" target="_blank">ASLLRP at Boston University</a>.
+                </p>
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <div class="pie">
+        <a href="index.html"> Home </a>
+        <a href="about.html"> About </a>
+    </div>
+
+</body>
+
+
+
+
+
+
+<script src="utils.js"></script>
+
+
+<script type="text/javascript">
+    // Get references to the toggle icon container and the toggle icon
+    var toggleIconContainer = document.getElementById('day');
+    var main = document.querySelector('.main');
+
+    // Add an event listener to the toggle icon container
+    toggleIconContainer.addEventListener('click', function () {
+        // Toggle the night-mode class on the main element
+        main.classList.toggle('night-mode');
+
+        // Change the icon depending on whether night mode is active
+        if (main.classList.contains('night-mode')) {
+            toggleIconContainer.src = 'day.svg';
+        } else {
+            toggleIconContainer.src = 'night.svg';
+        }
+    });
+
+
+</script>
+
+
+</html>
