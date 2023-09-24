@@ -9,8 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-
-
 const letterButtons = document.querySelectorAll('.letter');
 const letterCard = document.getElementById('letter-card');
 const letterCardContainer = document.getElementById('text-inner');
@@ -34,9 +32,9 @@ letterButtons.forEach((button) => {
 var toggleIconContainer = document.getElementById('day');
 var mainn = document.querySelector('.main');
 
-toggleIconContainer.addEventListener('click', function() {
+toggleIconContainer.addEventListener('click', function () {
     mainn.classList.toggle('night-mode');
-    
+
     if (mainn.classList.contains('night-mode')) {
         toggleIconContainer.src = 'day.svg';
     } else {
@@ -47,11 +45,11 @@ toggleIconContainer.addEventListener('click', function() {
 
 let animationFrameId = null;
 let isProcessing = false;
-        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+if (animationFrameId) cancelAnimationFrame(animationFrameId);
 
-        const resultCanvas = document.getElementById('resultCanvas');
-        const ctx = resultCanvas.getContext('2d');
-        ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
+const resultCanvas = document.getElementById('resultCanvas');
+const ctx = resultCanvas.getContext('2d');
+ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
 
 let stream;
 let session
@@ -61,21 +59,6 @@ let displayHeight;
 const classes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
 const colors = Array.from({ length: classes.length }, () => [Math.random() * 255, Math.random() * 255, Math.random() * 255]);
 
-async function processVideoFrame() {
-    const video = document.getElementById('video');
-    if (video.paused || video.ended) return;
-    const canvas = document.getElementById('resultCanvas');
-    const ctx = canvas.getContext('2d');
-
-    if (video.videoWidth === 0 || video.videoHeight === 0) return;
-    ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-
-    const inputTensor = await preprocessVideoFrame(video);
-    const modelUrl = 'best416.onnx';
-    await main(modelUrl, inputTensor);
-
-    if (isProcessing) requestAnimationFrame(processVideoFrame);
-}
 
 async function preprocessVideoFrame(video) {
     let canvas = document.createElement('canvas');
@@ -102,8 +85,8 @@ async function preprocessVideoFrame(video) {
 
 async function runObjectDetection(session, inputImage) {
     const [height, width] = [inputImage.height, inputImage.width];
-    console.log("Height: ", height)
-    console.log("imaage: ", inputImage)
+    //console.log("Height: ", height)
+    //console.log("imaage: ", inputImage)
 
     const length = Math.max(height, width);
     const scale = length / 416;
@@ -116,8 +99,9 @@ async function runObjectDetection(session, inputImage) {
 
 function drawBoundingBox(ctx, classId, confidence, x, y, xPlusW, yPlusH) {
     const label = `${classes[classId]} (${confidence.toFixed(2)})`;
-    console.log(classId)
-    console.log(confidence)
+    
+    //console.log(classId)
+    //console.log(confidence)
 
     const color = `rgb(${colors[classId].join(',')})`;
     ctx.strokeStyle = color;
@@ -142,59 +126,92 @@ function transpose(tensor) {
 
 async function main(modelUrl) {
     session = await ort.InferenceSession.create(modelUrl);
+    console.log("Session created")
     const webcamVideo = document.getElementById('video');
     const canvas = document.getElementById('resultCanvas');
     const ctx = canvas.getContext('2d');
 
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
+
+    const xScale = 1;
+    const yScale = 1;
+
+    let boxes = [];
+    let scores = [];
+    let classIds = [];
+
+    let outputData;
+
+    let rows;
+
+    const rowDataSize = 30; 
+    const classScoresStartIndex = 4;
+    let rowData;
+    let classScores;
+
+    
+
+
+    let maxScore;
+    let maxClassIndex;
+
+    let box;
+
+
     async function detectFrame() {
-        //!!!!
-        const xScale = 1;
-        const yScale = 1;
 
-        const { output0, scale } = await runObjectDetection(session, webcamVideo);
-        console.log(output0)
-        console.log("Scale: ", scale)
+        console.log("Detecting frame")
 
-        const outputData = transpose(output0);
+        const {output0, scale} = await runObjectDetection(session, webcamVideo);
+        outputData = transpose(output0);
 
-        const rows = outputData.dims[0];
+        rows = outputData.dims[0];
 
         //test txt file, blob color rgb
-        const boxes = [];
-        const scores = [];
-        const classIds = [];
+        boxes = [];
+        scores = [];
+        classIds = [];
 
-        for (let i = 0; i < rows; i++) {
-            const rowData = outputData.data.slice(i * 30, (i + 1) * 30);
-            const classScores = rowData.slice(4);
+        
 
-            const maxScore = Math.max(...classScores);
+        
+        
+        for (let i = 0, len = rows * rowDataSize; i < len; i += rowDataSize) {
 
-            const maxClassIndex = classScores.findIndex(score => score === maxScore);
-
-            if (maxScore >= 0.50) {
-                const box = [
-                    rowData[0] - (0.5 * rowData[2]), rowData[1] - (0.5 * rowData[3]),
-                    rowData[2], rowData[3]
-                ];
-                boxes.push(box);
-                scores.push(maxScore);
-                classIds.push(maxClassIndex);
+            maxScore = -Infinity;
+            maxClassIndex = -1;
+            for (let j = 0; j < rowDataSize - classScoresStartIndex; j++) {
+                const score = outputData.data[i + classScoresStartIndex + j];
+                if (score > maxScore) {
+                    maxScore = score;
+                    maxClassIndex = j;
+                }
             }
+        
+            if (maxScore < 0.50) continue;
+
+            box = [
+                outputData.data[i] - (0.5 * outputData.data[i + 2]),
+                outputData.data[i + 1] - (0.5 * outputData.data[i + 3]),
+                outputData.data[i + 2],
+                outputData.data[i + 3]
+            ];
+            boxes.push(box);
+            scores.push(maxScore);
+            classIds.push(maxClassIndex);
 
             //console.log(scores)
         }
 
-        const canvas = document.getElementById('resultCanvas');
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
+
 
         ctx.drawImage(webcamVideo, 0, 0, displayWidth, displayHeight);
 
         if (scores.length > 0) {
             const maxScoreIndex = scores.indexOf(Math.max(...scores));
 
-            console.log("Class ID: ", classIds[maxScoreIndex])
+            //console.log("Class ID: ", classIds[maxScoreIndex])
 
             const box = boxes[maxScoreIndex];
             drawBoundingBox(ctx, classIds[maxScoreIndex], scores[maxScoreIndex],
@@ -212,7 +229,7 @@ async function main(modelUrl) {
 async function startWebcam() {
 
     var button = document.querySelector(".start");
-    
+
 
 
     if (button.innerHTML === "Start Webcam") {
@@ -265,14 +282,14 @@ async function startWebcam() {
         button.innerHTML = "Start Webcam";
         button.classList.remove("pressed");
 
-        
-            let tracks = stream.getTracks();
-            tracks.forEach(function(track) {
-                track.stop();
-            });
-            let video = document.getElementById('video');
-            video.srcObject = null;
-            session = null;
+
+        let tracks = stream.getTracks();
+        tracks.forEach(function (track) {
+            track.stop();
+        });
+        let video = document.getElementById('video');
+        video.srcObject = null;
+        session = null;
         isProcessing = false;
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
 
@@ -280,7 +297,7 @@ async function startWebcam() {
         const ctx = resultCanvas.getContext('2d');
         ctx.clearRect(0, 0, resultCanvas.width, resultCanvas.height);
 
-        
+
 
     }
 
