@@ -98,63 +98,6 @@
 
 </body>
 
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const letters = document.querySelectorAll('.letter');
-        letters.forEach(letter => {
-            letter.addEventListener('click', function () {
-                letters.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    });
-</script>
-
-<script type="text/javascript">
-    const letterButtons = document.querySelectorAll('.letter');
-    const letterCard = document.getElementById('letter-card');
-    const letterCardContainer = document.getElementById('text-inner');
-    const letterTitle = document.getElementById('letter-title');
-    const letterImage = document.getElementById('letter-image');
-    const videosrc = document.getElementById('my-video');
-
-    letterButtons.forEach((button) => {
-        button.addEventListener('click', () => {
-            const letter = button.dataset.letter;
-            letterTitle.innerText = `Letter ${letter.toUpperCase()}`;
-            letterCardContainer.innerText = `This is the ASL sign for the letter ${letter.toUpperCase()}.`;
-            letterImage.src = `${letter.toLowerCase()}.svg`;
-            videosrc.src = `/vids/${letter.toUpperCase()}.mp4`;
-
-        });
-    });
-</script>
-
-
-
-<script type="text/javascript">
-// Get references to the toggle icon container and the toggle icon
-var toggleIconContainer = document.getElementById('day');
-var main = document.querySelector('.main');
-
-// Add an event listener to the toggle icon container
-toggleIconContainer.addEventListener('click', function() {
-    // Toggle the night-mode class on the main element
-    main.classList.toggle('night-mode');
-    
-    // Change the icon depending on whether night mode is active
-    if (main.classList.contains('night-mode')) {
-        toggleIconContainer.src = 'day.svg';
-    } else {
-        toggleIconContainer.src = 'night.svg';
-    }
-});
-
-
-</script>
-
 <script src="utils.js"></script>
-
 
 </html>
