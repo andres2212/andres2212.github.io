@@ -77,8 +77,8 @@ async function preprocessVideoFrame(video) {
     let blackCanvas = new cv.Mat.zeros(Math.max(mat.cols, mat.rows), Math.max(mat.cols, mat.rows), cv.CV_8UC3);
     let roi = blackCanvas.roi(new cv.Rect(0, 0, mat.cols, mat.rows));
     mat.copyTo(roi);
-    const blob = cv.blobFromImage(blackCanvas, 1.0 / 255.0, new cv.Size(331, 331), new cv.Scalar(0, 0, 0), false, false, cv.CV_32F);
-    const inputT = new ort.Tensor('float32', blob.data32F, [1, 3, 331, 331]);
+    const blob = cv.blobFromImage(blackCanvas, 1.0 / 255.0, new cv.Size(352, 352), new cv.Scalar(0, 0, 0), false, false, cv.CV_32F);
+    const inputT = new ort.Tensor('float32', blob.data32F, [1, 3, 352, 352]);
 
     return inputT;
 }
@@ -89,7 +89,7 @@ async function runObjectDetection(session, inputImage) {
     //console.log("imaage: ", inputImage)
 
     const length = Math.max(height, width);
-    const scale = length / 331;
+    const scale = length / 352;
 
     const inputTensor = await preprocessVideoFrame(inputImage);
     const { output0 } = await session.run({ images: inputTensor });
