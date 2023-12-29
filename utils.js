@@ -125,7 +125,7 @@ function transpose(tensor) {
 }
 
 async function main(modelUrl) {
-    session = await ort.InferenceSession.create(modelUrl);
+    session = await ort.InferenceSession.create(modelUrl, { executionProviders: ['webgpu'] });
     console.log("Session created")
     const webcamVideo = document.getElementById('video');
     const canvas = document.getElementById('resultCanvas');
